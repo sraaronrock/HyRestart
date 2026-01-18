@@ -1,0 +1,65 @@
+# HyRestart Configuration File
+# Automatic restart plugin configuration
+
+# Restart times (24h format: HH:mm)
+restartTimes:
+  - "03:00"
+  - "09:00"
+  - "15:00"
+  - "21:00"
+
+# Restart warnings
+# seconds: seconds before restart
+# message: message that will be sent to players
+# discordTime: text that will be shown in Discord (e.g., "30 minutes")
+warnings:
+  - seconds: 1800
+    message: "[Restart] The server will restart in 30 minutes."
+    discordTime: "30 minutes"
+  - seconds: 900
+    message: "[Restart] The server will restart in 15 minutes."
+    discordTime: "15 minutes"
+  - seconds: 300
+    message: "[Restart] The server will restart in 5 minutes. Get ready!"
+    discordTime: "5 minutes"
+  - seconds: 60
+    message: "[Restart] The server will restart in 1 minute. DISCONNECT NOW!"
+    discordTime: "1 minute"
+
+# Final restart message
+finalRestartMessage: "[Restart] Restarting server NOW!"
+
+# Discord configuration
+discord:
+  enabled: true
+  webhookUrl: ""
+  embedTitle: "Server Restart"
+  embedDescription: "The server will restart in **{time}**.\n\nPlease save your progress and disconnect."
+  embedColor: 16711680  # Color in decimal (16711680 = Red)
+  finalEmbedTitle: "SERVER RESTARTING"
+  finalEmbedDescription: "The server is restarting NOW.\n\nThe server will be back in a few minutes."
+
+# System Messages (logs and console output)
+messages:
+  pluginEnabled: "[HyRestart] Plugin enabled successfully!"
+  nextRestart: "[HyRestart] Next restart: {time}"
+  reloadingConfig: "[HyRestart] Reloading configuration..."
+  configReloaded: "[HyRestart] Configuration reloaded successfully!"
+  defaultConfigCreated: "[HyRestart] Default config.yml created"
+  errorCreatingConfig: "[HyRestart] Error creating config file, generating default"
+  configLoaded: "[HyRestart] Configuration loaded successfully"
+  errorLoadingConfig: "[HyRestart] Error loading configuration: {error}"
+  configSaved: "[HyRestart] Configuration saved successfully"
+  errorSavingConfig: "[HyRestart] Error saving configuration: {error}"
+  schedulerStarted: "[HyRestart] Scheduler started. Next restart: {time}"
+  invalidTimeFormat: "[HyRestart] Invalid time format: {time}"
+  errorInScheduler: "[HyRestart] Error in scheduler: {error}"
+  sentRestartWarning: "[HyRestart] Sent restart warning: {discordTime}"
+  broadcastingToPlayers: "[HyRestart] Broadcasting to {count} players: {message}"
+  errorBroadcasting: "[HyRestart] Error broadcasting message: {error}"
+  errorSendingToPlayer: "[HyRestart] Error sending message to {username}"
+  errorSchedulingForPlayer: "[HyRestart] Error scheduling message for {username}"
+  startingRestart: "[HyRestart] Starting restart sequence..."
+  shuttingDown: "[HyRestart] Shutting down server..."
+  discordWebhookFailed: "[HyRestart] Failed to send Discord webhook. Response code: {code}"
+  discordWebhookError: "[HyRestart] Error sending Discord webhook: {error}"
