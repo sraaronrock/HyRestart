@@ -1,5 +1,6 @@
 package dev.alesixdev.hyrestart.scheduler;
 
+import com.hypixel.hytale.server.core.HytaleServer;
 import dev.alesixdev.hyrestart.config.ConfigData;
 import dev.alesixdev.hyrestart.config.WarningConfig;
 import dev.alesixdev.hyrestart.utils.DiscordWebhook;
@@ -10,7 +11,6 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.server.core.Message;
-
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
@@ -23,11 +23,11 @@ import java.util.logging.Logger;
 
 public class RestartScheduler {
     private static final Logger LOGGER = Logger.getLogger(RestartScheduler.class.getName());
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
     private static final int CHECK_INTERVAL_SECONDS = 30;
     private static final int WARNING_WINDOW_SECONDS = 30;
-    private static final int RESTART_THRESHOLD_SECONDS = 45;
-    private static final int SHUTDOWN_DELAY_MS = 3000;
+    private static final int RESTART_THRESHOLD_SECONDS = 5;
+    private static final int RESTART_SAFETY_MARGIN_SECONDS = 180;
 
     private final ConfigData config;
     private final ScheduledExecutorService scheduler;
@@ -57,6 +57,12 @@ public class RestartScheduler {
     }
 
     public void stop() {
+        if (scheduler.isShutdown()) {
+            LOGGER.info("[HyRestart] Scheduler already stopped, skipping...");
+            return;
+        }
+
+        LOGGER.info("[HyRestart] Stopping scheduler...");
         scheduler.shutdown();
         try {
             if (!scheduler.awaitTermination(5, TimeUnit.SECONDS)) {
@@ -74,9 +80,14 @@ public class RestartScheduler {
 
         for (String timeStr : config.getRestartTimes()) {
             try {
-                LocalTime restartTime = LocalTime.parse(timeStr, TIME_FORMATTER);
-                if (restartTime.isAfter(currentTime) && (closestTime == null || restartTime.isBefore(closestTime))) {
-                    closestTime = restartTime;
+                String normalizedTime = normalizeTimeFormat(timeStr);
+                LocalTime restartTime = LocalTime.parse(normalizedTime, TIME_FORMATTER);
+                long secondsUntil = java.time.Duration.between(currentTime, restartTime).getSeconds();
+
+                if (secondsUntil > RESTART_SAFETY_MARGIN_SECONDS) {
+                    if (closestTime == null || restartTime.isBefore(closestTime)) {
+                        closestTime = restartTime;
+                    }
                 }
             } catch (Exception e) {
                 LOGGER.severe(config.getMessages().getInvalidTimeFormat().replace("{time}", timeStr));
@@ -85,15 +96,30 @@ public class RestartScheduler {
 
         if (closestTime == null && !config.getRestartTimes().isEmpty()) {
             try {
-                closestTime = LocalTime.parse(config.getRestartTimes().get(0), TIME_FORMATTER);
+                String normalizedTime = normalizeTimeFormat(config.getRestartTimes().get(0));
+                closestTime = LocalTime.parse(normalizedTime, TIME_FORMATTER);
+                LOGGER.info("[HyRestart] No valid restart times available today, scheduling for tomorrow: " + closestTime);
             } catch (Exception e) {
-                System.err.println("[HyRestart] Invalid time format: " + config.getRestartTimes().get(0));
+                LOGGER.severe("[HyRestart] Invalid time format: " + config.getRestartTimes().get(0));
             }
         }
 
         nextRestartTime = closestTime;
         sentWarnings.clear();
         restartInProgress = false;
+
+        if (nextRestartTime != null) {
+            long secondsUntil = calculateSecondsUntilRestart();
+            long hours = secondsUntil / 3600;
+            long minutes = (secondsUntil % 3600) / 60;
+            LOGGER.info("[HyRestart] Next restart scheduled at: " + nextRestartTime + " (in " + hours + "h " + minutes + "m)");
+        }
+    }
+
+    private String normalizeTimeFormat(String timeStr) {
+        String trimmed = timeStr.trim();
+        long colonCount = trimmed.chars().filter(ch -> ch == ':').count();
+        return colonCount == 1 ? trimmed + ":00" : trimmed;
     }
 
     private void checkRestartTime() {
@@ -102,24 +128,29 @@ public class RestartScheduler {
         }
 
         try {
-            long secondsUntilRestart = calculateSecondsUntilRestart();
+            LocalTime currentTime = LocalTime.now();
+            long rawSeconds = java.time.Duration.between(currentTime, nextRestartTime).getSeconds();
+
+            if (rawSeconds <= RESTART_THRESHOLD_SECONDS && rawSeconds >= -CHECK_INTERVAL_SECONDS) {
+                if (!sentWarnings.contains("restart")) {
+                    sentWarnings.add("restart");
+                    restartInProgress = true;
+                    performRestart();
+                    return;
+                }
+            }
+
+            long secondsUntilRestart = rawSeconds < 0 ? rawSeconds + 86400 : rawSeconds;
             processWarnings(secondsUntilRestart);
-            checkForRestart(secondsUntilRestart);
         } catch (Exception e) {
             LOGGER.severe(config.getMessages().getErrorInScheduler().replace("{error}", e.getMessage()));
-            e.printStackTrace();
         }
     }
 
     private long calculateSecondsUntilRestart() {
         LocalTime currentTime = LocalTime.now();
         long seconds = java.time.Duration.between(currentTime, nextRestartTime).getSeconds();
-
-        if (seconds < 0 && seconds >= -120) {
-            return 0; // Trigger immediate restart
-        }
-
-        return seconds < 0 ? seconds + 24 * 3600 : seconds;
+        return seconds < 0 ? seconds + 86400 : seconds;
     }
 
     private void processWarnings(long secondsUntilRestart) {
@@ -137,15 +168,6 @@ public class RestartScheduler {
         return secondsUntilRestart <= warningSeconds
             && secondsUntilRestart > (warningSeconds - WARNING_WINDOW_SECONDS)
             && !sentWarnings.contains(warningKey);
-    }
-
-    private void checkForRestart(long secondsUntilRestart) {
-        if (secondsUntilRestart <= RESTART_THRESHOLD_SECONDS
-            && !sentWarnings.contains("restart")) {
-            sentWarnings.add("restart");
-            restartInProgress = true;
-            performRestart();
-        }
     }
 
     private void sendWarning(WarningConfig warning) {
@@ -182,7 +204,6 @@ public class RestartScheduler {
             }
         } catch (Exception e) {
             LOGGER.severe(config.getMessages().getErrorBroadcasting().replace("{error}", e.getMessage()));
-            e.printStackTrace();
         }
     }
 
@@ -209,25 +230,18 @@ public class RestartScheduler {
 
     private void performRestart() {
         LOGGER.info(config.getMessages().getStartingRestart());
-
-        if (config.getDiscord().isEnabled() && !config.getDiscord().getWebhookUrl().isEmpty()) {
-            discordWebhook.sendEmbed(
-                config.getDiscord().getFinalEmbedTitle(),
-                config.getDiscord().getFinalEmbedDescription(),
-                config.getDiscord().getEmbedColor()
-            );
-        }
-
         broadcastMessage(config.getFinalRestartMessage());
 
+        stop();
+
         try {
-            Thread.sleep(SHUTDOWN_DELAY_MS);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
 
         LOGGER.info(config.getMessages().getShuttingDown());
-        System.exit(0);
+        HytaleServer.get().shutdownServer();
     }
 
     public LocalTime getNextRestartTime() {

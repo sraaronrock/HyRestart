@@ -4,6 +4,7 @@ import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import dev.alesixdev.hyrestart.config.ConfigManager;
 import dev.alesixdev.hyrestart.scheduler.RestartScheduler;
+import dev.alesixdev.hyrestart.utils.DiscordWebhook;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -13,6 +14,7 @@ public class HyRestartPlugin extends JavaPlugin {
     private static final Logger LOGGER = Logger.getLogger(HyRestartPlugin.class.getName());
     private ConfigManager configManager;
     private RestartScheduler restartScheduler;
+    private DiscordWebhook discordWebhook;
 
     public HyRestartPlugin(@Nonnull JavaPluginInit init) {
         super(init);
@@ -21,8 +23,21 @@ public class HyRestartPlugin extends JavaPlugin {
     @Override
     protected void setup() {
         initializeConfig();
+        setupDiscordWebhook();
         startScheduler();
+
         LOGGER.info(configManager.getData().getMessages().getPluginEnabled());
+    }
+
+    @Override
+    protected void start() {
+        sendStartupWebhook();
+    }
+
+    @Override
+    protected void shutdown() {
+        stopScheduler();
+        sendStopWebhook();
     }
 
     private void initializeConfig() {
@@ -37,27 +52,39 @@ public class HyRestartPlugin extends JavaPlugin {
         LOGGER.info(configManager.getData().getMessages().getNextRestart().replace("{time}", String.valueOf(restartScheduler.getNextRestartTime())));
     }
 
-    public void reloadConfig() {
-        LOGGER.info(configManager.getData().getMessages().getReloadingConfig());
-
-        stopScheduler();
-        configManager.reload();
-        startScheduler();
-
-        LOGGER.info(configManager.getData().getMessages().getConfigReloaded());
-    }
-
     private void stopScheduler() {
         if (restartScheduler != null) {
             restartScheduler.stop();
         }
     }
 
-    public ConfigManager getConfigManager() {
-        return configManager;
+    private void setupDiscordWebhook() {
+        discordWebhook = new DiscordWebhook(
+            configManager.getData().getDiscord().getWebhookUrl(),
+            configManager.getData().getMessages()
+        );
     }
 
-    public RestartScheduler getRestartScheduler() {
-        return restartScheduler;
+
+    private void sendStartupWebhook() {
+        if (configManager.getData().getDiscord().isEnabled() &&
+            !configManager.getData().getDiscord().getWebhookUrl().isEmpty()) {
+            discordWebhook.sendEmbed(
+                configManager.getData().getDiscord().getStartupEmbedTitle(),
+                configManager.getData().getDiscord().getStartupEmbedDescription(),
+                configManager.getData().getDiscord().getStartupEmbedColor()
+            );
+        }
+    }
+
+    private void sendStopWebhook(){
+        if (configManager.getData().getDiscord().isEnabled() &&
+            !configManager.getData().getDiscord().getWebhookUrl().isEmpty()) {
+            discordWebhook.sendEmbed(
+                    configManager.getData().getDiscord().getShutdownEmbedTitle(),
+                    configManager.getData().getDiscord().getShutdownEmbedDescription(),
+                    configManager.getData().getDiscord().getShutdownEmbedColor()
+            );
+        }
     }
 }
