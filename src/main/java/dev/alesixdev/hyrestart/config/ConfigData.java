@@ -69,8 +69,12 @@ public class ConfigData {
         private String embedTitle = "Server Restart";
         private String embedDescription = "The server will restart in **{time}**.\n\nPlease save your progress and disconnect.";
         private int embedColor = 16711680;
-        private String finalEmbedTitle = "SERVER RESTARTING";
-        private String finalEmbedDescription = "The server is restarting NOW.\n\nThe server will be back in a few minutes.";
+        private String shutdownEmbedTitle = "SERVER SHUTTING DOWN";
+        private String shutdownEmbedDescription = "The server is shutting down now.\n\nThe server will be back in a few minutes.";
+        private int shutdownEmbedColor = 16711680;
+        private String startupEmbedTitle = "SERVER ONLINE";
+        private String startupEmbedDescription = "The server is now online and ready to accept connections!";
+        private int startupEmbedColor = 65280;
 
         public DiscordConfig() {
         }
@@ -115,28 +119,58 @@ public class ConfigData {
             this.embedColor = embedColor;
         }
 
-        public String getFinalEmbedTitle() {
-            return finalEmbedTitle;
+        public String getShutdownEmbedTitle() {
+            return shutdownEmbedTitle;
         }
 
-        public void setFinalEmbedTitle(String finalEmbedTitle) {
-            this.finalEmbedTitle = finalEmbedTitle;
+        public void setShutdownEmbedTitle(String shutdownEmbedTitle) {
+            this.shutdownEmbedTitle = shutdownEmbedTitle;
         }
 
-        public String getFinalEmbedDescription() {
-            return finalEmbedDescription;
+        public String getShutdownEmbedDescription() {
+            return shutdownEmbedDescription;
         }
 
-        public void setFinalEmbedDescription(String finalEmbedDescription) {
-            this.finalEmbedDescription = finalEmbedDescription;
+        public void setShutdownEmbedDescription(String shutdownEmbedDescription) {
+            this.shutdownEmbedDescription = shutdownEmbedDescription;
+        }
+
+        public int getShutdownEmbedColor() {
+            return shutdownEmbedColor;
+        }
+
+        public void setShutdownEmbedColor(int shutdownEmbedColor) {
+            this.shutdownEmbedColor = shutdownEmbedColor;
+        }
+
+        public String getStartupEmbedTitle() {
+            return startupEmbedTitle;
+        }
+
+        public void setStartupEmbedTitle(String startupEmbedTitle) {
+            this.startupEmbedTitle = startupEmbedTitle;
+        }
+
+        public String getStartupEmbedDescription() {
+            return startupEmbedDescription;
+        }
+
+        public void setStartupEmbedDescription(String startupEmbedDescription) {
+            this.startupEmbedDescription = startupEmbedDescription;
+        }
+
+        public int getStartupEmbedColor() {
+            return startupEmbedColor;
+        }
+
+        public void setStartupEmbedColor(int startupEmbedColor) {
+            this.startupEmbedColor = startupEmbedColor;
         }
     }
 
     public static class MessagesConfig {
         private String pluginEnabled = "[HyRestart] Plugin enabled successfully!";
         private String nextRestart = "[HyRestart] Next restart: {time}";
-        private String reloadingConfig = "[HyRestart] Reloading configuration...";
-        private String configReloaded = "[HyRestart] Configuration reloaded successfully!";
         private String defaultConfigCreated = "[HyRestart] Default config.yml created";
         private String errorCreatingConfig = "[HyRestart] Error creating config file, generating default";
         private String configLoaded = "[HyRestart] Configuration loaded successfully";
@@ -173,22 +207,6 @@ public class ConfigData {
 
         public void setNextRestart(String nextRestart) {
             this.nextRestart = nextRestart;
-        }
-
-        public String getReloadingConfig() {
-            return reloadingConfig;
-        }
-
-        public void setReloadingConfig(String reloadingConfig) {
-            this.reloadingConfig = reloadingConfig;
-        }
-
-        public String getConfigReloaded() {
-            return configReloaded;
-        }
-
-        public void setConfigReloaded(String configReloaded) {
-            this.configReloaded = configReloaded;
         }
 
         public String getDefaultConfigCreated() {

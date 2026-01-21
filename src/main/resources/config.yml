@@ -1,12 +1,14 @@
 # HyRestart Configuration File
 # Automatic restart plugin configuration
 
-# Restart times (24h format: HH:mm)
+# Restart times (24h format: HH:mm or HH:mm:ss)
+# Both formats work - if you use HH:mm, :00 seconds will be added automatically
+# Examples: "03:00" becomes "03:00:00" | "15:30:45" stays "15:30:45"
 restartTimes:
-  - "03:00"
-  - "09:00"
-  - "15:00"
-  - "21:00"
+  - "03:00:00"
+  - "09:00:00"
+  - "15:00:00"
+  - "21:00:00"
 
 # Restart warnings
 # seconds: seconds before restart
@@ -33,18 +35,23 @@ finalRestartMessage: "[Restart] Restarting server NOW!"
 discord:
   enabled: true
   webhookUrl: ""
+  # Warning embeds (sent during countdown)
   embedTitle: "Server Restart"
   embedDescription: "The server will restart in **{time}**.\n\nPlease save your progress and disconnect."
   embedColor: 16711680  # Color in decimal (16711680 = Red)
-  finalEmbedTitle: "SERVER RESTARTING"
-  finalEmbedDescription: "The server is restarting NOW.\n\nThe server will be back in a few minutes."
+  # Shutdown embed (sent when server is shutting down)
+  shutdownEmbedTitle: "SERVER SHUTTING DOWN"
+  shutdownEmbedDescription: "The server is shutting down now.\n\nThe server will be back in a few minutes."
+  shutdownEmbedColor: 16711680  # Red
+  # Startup embed (sent when server starts)
+  startupEmbedTitle: "SERVER ONLINE"
+  startupEmbedDescription: "The server is now online!"
+  startupEmbedColor: 65280  # Green
 
 # System Messages (logs and console output)
 messages:
   pluginEnabled: "[HyRestart] Plugin enabled successfully!"
   nextRestart: "[HyRestart] Next restart: {time}"
-  reloadingConfig: "[HyRestart] Reloading configuration..."
-  configReloaded: "[HyRestart] Configuration reloaded successfully!"
   defaultConfigCreated: "[HyRestart] Default config.yml created"
   errorCreatingConfig: "[HyRestart] Error creating config file, generating default"
   configLoaded: "[HyRestart] Configuration loaded successfully"

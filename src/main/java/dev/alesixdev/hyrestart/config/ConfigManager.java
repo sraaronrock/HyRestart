@@ -20,7 +20,6 @@ public class ConfigManager {
     private final Yaml yaml;
 
     public ConfigManager() {
-        // Initialize with default config to have messages available during loading
         this.configData = new ConfigData();
 
         LoaderOptions loaderOptions = new LoaderOptions();
@@ -86,10 +85,6 @@ public class ConfigManager {
             LOGGER.severe(configData.getMessages().getErrorSavingConfig().replace("{error}", e.getMessage()));
             e.printStackTrace();
         }
-    }
-
-    public void reload() {
-        load();
     }
 
     public ConfigData getData() {
