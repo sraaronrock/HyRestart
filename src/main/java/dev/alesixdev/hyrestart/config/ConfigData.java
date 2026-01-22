@@ -7,16 +7,17 @@ import java.util.List;
 public class ConfigData {
     private List<String> restartTimes = Arrays.asList("03:00", "09:00", "15:00", "21:00");
     private List<WarningConfig> warnings = createDefaultWarnings();
-    private String finalRestartMessage = "[Restart] Restarting server NOW!";
+    private String finalRestartMessage = "<red>[Restart] Restarting server NOW!</red>";
     private DiscordConfig discord = new DiscordConfig();
     private MessagesConfig messages = new MessagesConfig();
+    private ColorConfig colors = new ColorConfig();
 
     private static List<WarningConfig> createDefaultWarnings() {
         List<WarningConfig> warnings = new ArrayList<>();
-        warnings.add(new WarningConfig(1800, "[Restart] The server will restart in 30 minutes.", "30 minutes"));
-        warnings.add(new WarningConfig(900, "[Restart] The server will restart in 15 minutes.", "15 minutes"));
-        warnings.add(new WarningConfig(300, "[Restart] The server will restart in 5 minutes. Get ready!", "5 minutes"));
-        warnings.add(new WarningConfig(60, "[Restart] The server will restart in 1 minute. DISCONNECT NOW!", "1 minute"));
+        warnings.add(new WarningConfig(1800, "<blue>[Restart] The server will restart in 30 minutes.</blue>", "30 minutes"));
+        warnings.add(new WarningConfig(900, "<yellow>[Restart] The server will restart in 15 minutes.</yellow>", "15 minutes"));
+        warnings.add(new WarningConfig(300, "<gold>[Restart] The server will restart in 5 minutes. Get ready!</gold>", "5 minutes"));
+        warnings.add(new WarningConfig(60, "<red>[Restart]</red> <white>The server will restart in</white> <yellow>1 minute</yellow><red>. DISCONNECT NOW!</red>", "1 minute"));
         return warnings;
     }
 
@@ -61,6 +62,14 @@ public class ConfigData {
 
     public void setMessages(MessagesConfig messages) {
         this.messages = messages;
+    }
+
+    public ColorConfig getColors() {
+        return colors;
+    }
+
+    public void setColors(ColorConfig colors) {
+        this.colors = colors;
     }
 
     public static class DiscordConfig {
@@ -351,6 +360,48 @@ public class ConfigData {
 
         public void setDiscordWebhookError(String discordWebhookError) {
             this.discordWebhookError = discordWebhookError;
+        }
+    }
+
+    public static class ColorConfig {
+        private String errorColor = "red";
+        private String successColor = "green";
+        private String infoColor = "blue";
+        private String warningColor = "yellow";
+
+        public ColorConfig() {
+        }
+
+        public String getErrorColor() {
+            return errorColor;
+        }
+
+        public void setErrorColor(String errorColor) {
+            this.errorColor = errorColor;
+        }
+
+        public String getSuccessColor() {
+            return successColor;
+        }
+
+        public void setSuccessColor(String successColor) {
+            this.successColor = successColor;
+        }
+
+        public String getInfoColor() {
+            return infoColor;
+        }
+
+        public void setInfoColor(String infoColor) {
+            this.infoColor = infoColor;
+        }
+
+        public String getWarningColor() {
+            return warningColor;
+        }
+
+        public void setWarningColor(String warningColor) {
+            this.warningColor = warningColor;
         }
     }
 }

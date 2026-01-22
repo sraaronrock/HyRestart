@@ -2,12 +2,15 @@ package dev.alesixdev.hyrestart;
 
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
+import dev.alesixdev.hyrestart.commands.HyRestartCommand;
+import dev.alesixdev.hyrestart.config.ConfigData;
 import dev.alesixdev.hyrestart.config.ConfigManager;
 import dev.alesixdev.hyrestart.scheduler.RestartScheduler;
 import dev.alesixdev.hyrestart.utils.DiscordWebhook;
 
 import javax.annotation.Nonnull;
 import java.io.File;
+import java.time.LocalTime;
 import java.util.logging.Logger;
 
 public class HyRestartPlugin extends JavaPlugin {
@@ -25,6 +28,7 @@ public class HyRestartPlugin extends JavaPlugin {
         initializeConfig();
         setupDiscordWebhook();
         startScheduler();
+        registerCommands();
 
         LOGGER.info(configManager.getData().getMessages().getPluginEnabled());
     }
@@ -86,5 +90,35 @@ public class HyRestartPlugin extends JavaPlugin {
                     configManager.getData().getDiscord().getShutdownEmbedColor()
             );
         }
+    }
+
+    private void registerCommands() {
+        getCommandRegistry().registerCommand(new HyRestartCommand(this));
+        LOGGER.info("[HyRestart] Commands registered successfully");
+    }
+
+    public void reloadPlugin() {
+        LOGGER.info("[HyRestart] Reloading plugin...");
+
+        stopScheduler();
+
+        configManager.load();
+
+        setupDiscordWebhook();
+
+        startScheduler();
+
+        LOGGER.info("[HyRestart] Plugin reloaded successfully");
+    }
+
+    public LocalTime getNextRestartTime() {
+        if (restartScheduler != null) {
+            return restartScheduler.getNextRestartTime();
+        }
+        return null;
+    }
+
+    public ConfigData getConfigData() {
+        return configManager.getData();
     }
 }
