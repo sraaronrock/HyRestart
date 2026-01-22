@@ -4,6 +4,7 @@ import com.hypixel.hytale.server.core.HytaleServer;
 import dev.alesixdev.hyrestart.config.ConfigData;
 import dev.alesixdev.hyrestart.config.WarningConfig;
 import dev.alesixdev.hyrestart.utils.DiscordWebhook;
+import dev.alesixdev.hyrestart.utils.MessageFormatter;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.entity.entities.Player;
@@ -197,7 +198,7 @@ public class RestartScheduler {
                 return;
             }
 
-            Message msg = Message.raw(message);
+            Message msg = MessageFormatter.createColoredMessage(message);
 
             for (PlayerRef playerRef : players) {
                 sendMessageToPlayer(playerRef, msg);

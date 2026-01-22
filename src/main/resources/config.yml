@@ -10,26 +10,39 @@ restartTimes:
   - "15:00:00"
   - "21:00:00"
 
+# Message colors
+# Supported colors: black, dark_blue, dark_green, dark_aqua, dark_red, dark_purple, gold, gray, dark_gray, blue, green, aqua, red, light_purple, yellow, white
+colors:
+  errorColor: "red"       # Critical errors and final restart alert
+  successColor: "green"   # Success messages
+  infoColor: "blue"       # Informational messages
+  warningColor: "yellow"  # General warnings
+
 # Restart warnings
 # seconds: seconds before restart
-# message: message that will be sent to players
+# message: message that will be sent to players (supports color tags: <color>text</color>)
 # discordTime: text that will be shown in Discord (e.g., "30 minutes")
+#
+# Supported colors: black, dark_blue, dark_green, dark_aqua, dark_red, dark_purple, gold, gray, dark_gray, blue, green, aqua, red, light_purple, yellow, white
+#
+# You can use multiple colors in one message:
+# Example: "<white>Server will restart in</white> <red>5 minutes</red> <yellow>Get ready!</yellow>"
 warnings:
   - seconds: 1800
-    message: "[Restart] The server will restart in 30 minutes."
+    message: "<blue>[Restart] The server will restart in 30 minutes.</blue>"
     discordTime: "30 minutes"
   - seconds: 900
-    message: "[Restart] The server will restart in 15 minutes."
+    message: "<yellow>[Restart] The server will restart in 15 minutes.</yellow>"
     discordTime: "15 minutes"
   - seconds: 300
-    message: "[Restart] The server will restart in 5 minutes. Get ready!"
+    message: "<gold>[Restart] The server will restart in 5 minutes. Get ready!</gold>"
     discordTime: "5 minutes"
   - seconds: 60
-    message: "[Restart] The server will restart in 1 minute. DISCONNECT NOW!"
+    message: "<red>[Restart]</red> <white>The server will restart in</white> <yellow>1 minute</yellow><red>. DISCONNECT NOW!</red>"
     discordTime: "1 minute"
 
-# Final restart message
-finalRestartMessage: "[Restart] Restarting server NOW!"
+# Final restart message (supports color tags)
+finalRestartMessage: "<red>[Restart] Restarting server NOW!</red>"
 
 # Discord configuration
 discord:
