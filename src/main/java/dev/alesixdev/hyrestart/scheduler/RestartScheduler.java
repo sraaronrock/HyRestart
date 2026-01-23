@@ -210,20 +210,21 @@ public class RestartScheduler {
 
     private void sendMessageToPlayer(PlayerRef playerRef, Message msg) {
         try {
-            Universe.get().getDefaultWorld().execute(() -> {
-                try {
-                    Ref<EntityStore> ref = playerRef.getReference();
-                    if (ref != null) {
-                        Store<EntityStore> store = ref.getStore();
+            Ref<EntityStore> ref = playerRef.getReference();
+            if (ref != null) {
+                Store<EntityStore> store = ref.getStore();
+                store.getExternalData().getWorld().execute(() -> {
+                    try {
                         Player player = store.getComponent(ref, Player.getComponentType());
                         if (player != null) {
                             player.sendMessage(msg);
                         }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        LOGGER.severe(config.getMessages().getErrorSendingToPlayer().replace("{username}", playerRef.getUsername()));
                     }
-                } catch (Exception e) {
-                    LOGGER.severe(config.getMessages().getErrorSendingToPlayer().replace("{username}", playerRef.getUsername()));
-                }
-            });
+                });
+            }
         } catch (Exception e) {
             LOGGER.severe(config.getMessages().getErrorSchedulingForPlayer().replace("{username}", playerRef.getUsername()));
         }

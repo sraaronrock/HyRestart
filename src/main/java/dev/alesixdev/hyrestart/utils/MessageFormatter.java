@@ -18,6 +18,7 @@ public class MessageFormatter {
     static {
         COLOR_MAP.put("black", new Color(0, 0, 0));
         COLOR_MAP.put("dark_blue", new Color(0, 0, 170));
+        COLOR_MAP.put("light_blue", new Color(144, 213,255));
         COLOR_MAP.put("dark_green", new Color(0, 170, 0));
         COLOR_MAP.put("dark_aqua", new Color(0, 170, 170));
         COLOR_MAP.put("dark_red", new Color(170, 0, 0));

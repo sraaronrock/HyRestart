@@ -15,7 +15,7 @@ restartTimes:
 colors:
   errorColor: "red"       # Critical errors and final restart alert
   successColor: "green"   # Success messages
-  infoColor: "blue"       # Informational messages
+  infoColor: "light_blue"       # Informational messages
   warningColor: "yellow"  # General warnings
 
 # Restart warnings
@@ -23,13 +23,13 @@ colors:
 # message: message that will be sent to players (supports color tags: <color>text</color>)
 # discordTime: text that will be shown in Discord (e.g., "30 minutes")
 #
-# Supported colors: black, dark_blue, dark_green, dark_aqua, dark_red, dark_purple, gold, gray, dark_gray, blue, green, aqua, red, light_purple, yellow, white
+# Supported colors: black, dark_blue, light_blue, dark_green, dark_aqua, dark_red, dark_purple, gold, gray, dark_gray, blue, green, aqua, red, light_purple, yellow, white
 #
 # You can use multiple colors in one message:
 # Example: "<white>Server will restart in</white> <red>5 minutes</red> <yellow>Get ready!</yellow>"
 warnings:
   - seconds: 1800
-    message: "<blue>[Restart] The server will restart in 30 minutes.</blue>"
+    message: "<light_blue>[Restart] The server will restart in 30 minutes.</light_blue>"
     discordTime: "30 minutes"
   - seconds: 900
     message: "<yellow>[Restart] The server will restart in 15 minutes.</yellow>"
