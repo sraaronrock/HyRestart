@@ -8,7 +8,7 @@ version = '1.2.2'
 repositories {
     mavenCentral()
     flatDir {
-        dirs 'libraries', 'C:/Users/420Cl/AppData/Roaming/Hytale/install/release/package/game/latest/Server'
+        dirs 'libraries'
     }
 }
 
