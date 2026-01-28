@@ -3,12 +3,12 @@ plugins {
 }
 
 group = 'dev.alesixdev'
-version = '1.2.1'
+version = '1.2.2'
 
 repositories {
     mavenCentral()
     flatDir {
-        dirs 'libraries'
+        dirs 'libraries', 'C:/Users/420Cl/AppData/Roaming/Hytale/install/release/package/game/latest/Server'
     }
 }
 
